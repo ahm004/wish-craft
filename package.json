@@ -1,0 +1,14 @@
+{
+  "name": "wishcraft",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Animated wish & proposal cards, paid share links via Razorpay",
+  "scripts": {
+    "dev": "node dev-server.js",
+    "legal": "node legal/build.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WishCraft — send a little magic</title>
+<meta name="description" content="Animated birthday wishes, proposals and apologies with a teddy bear, your photos and music. Preview free, ₹35 to send.">
+<meta property="og:title" content="Someone made something special for you ✨">
+<meta property="og:description" content="Tap to open your surprise.">
+<meta name="theme-color" content="#120b24">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=DM+Sans:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,900;1,9..144,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body data-theme="creator">
+<div class="ambient" id="ambient" aria-hidden="true"></div>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<!-- ============ CREATOR / LANDING ============ -->
+<main id="creator" hidden>
+  <div class="scroll-progress" id="scrollBar" aria-hidden="true"></div>
+
+  <header class="topbar wrap">
+    <a class="brand" href="/"><span class="logo">✦</span> WishCraft</a>
+    <a class="btn primary small" href="#make">Make a card</a>
+  </header>
+
+  <!-- hero -->
+  <section class="hero2 wrap">
+    <div class="hero-copy" data-reveal>
+      <p class="kicker">Animated cards · just <b class="price-tag">₹35</b></p>
+      <h1>Say it with a <em>little magic</em>.</h1>
+      <p class="hero-sub">A gift box that opens, a teddy that cries when she says no, your photos, your song, and a link you can send on WhatsApp.</p>
+      <div class="hero-cta">
+        <a class="btn primary" href="#make">Make my card</a>
+        <button class="btn ghost" id="demoBtn" type="button">▶ Watch a demo</button>
+      </div>
+      <p class="mini">Preview is free. You only pay when you love it.</p>
+    </div>
+    <div class="hero-art" id="heroArt" data-reveal="scale">
+      <div class="orb" data-depth="0.08"></div>
+      <div class="ring-dash" data-depth="0.14"></div>
+      <div class="hero-bear" id="heroBear" data-depth="-0.06"></div>
+      <div class="floaters" id="floaters" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <!-- how it works -->
+  <section class="steps wrap" id="how">
+    <h2 class="sec-title" data-reveal>Three taps. That's it.</h2>
+    <ol class="steps-grid" data-stagger>
+      <li class="step" data-reveal>
+        <div class="step-bear" data-bear="heart"></div>
+        <span class="step-n">1</span>
+        <h3>Pick the moment</h3>
+        <p>Birthday, proposal, valentine, sorry… each one has its own look, music and ending.</p>
+      </li>
+      <li class="step" data-reveal>
+        <div class="step-bear" data-bear="frame"></div>
+        <span class="step-n">2</span>
+        <h3>Add your words</h3>
+        <p>Write a message, add up to 5 photos with captions, even upload your own song.</p>
+      </li>
+      <li class="step" data-reveal>
+        <div class="step-bear" data-bear="envelope"></div>
+        <span class="step-n">3</span>
+        <h3>Preview, pay, send</h3>
+        <p>Watch it for free. Love it? Pay ₹35 and send the link on WhatsApp instantly.</p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- moments -->
+  <section class="moments wrap" id="moments">
+    <h2 class="sec-title" data-reveal>Pick your moment</h2>
+    <p class="sec-sub" data-reveal>Tap a card to start. Say hi to the bears first, they like attention. 🐻</p>
+    <div class="moment-row" id="momentRow" data-stagger></div>
+  </section>
+
+  <!-- make -->
+  <section class="make wrap" id="make">
+    <h2 class="sec-title" data-reveal>Make your card</h2>
+
+    <section class="card mine" id="mine" hidden>
+      <h2 class="lbl">Your cards</h2>
+      <ul class="mine-list" id="mineList"></ul>
+    </section>
+
+    <form id="wishForm" class="card" autocomplete="off" novalidate data-reveal>
+      <fieldset>
+        <legend class="lbl">1 · What's the moment?</legend>
+        <div class="chips" id="chips"></div>
+      </fieldset>
+
+      <div class="row">
+        <label class="field"><span class="lbl">2 · Their name</span>
+          <input id="to" maxlength="40" required placeholder="e.g. Sara">
+        </label>
+        <label class="field"><span class="lbl">Your name</span>
+          <input id="from" maxlength="40" required placeholder="e.g. Sam">
+        </label>
+      </div>
+
+      <div class="field">
+        <span class="lbl">Which teddy is which? <span class="opt">the boy teddy gets a bow tie, the girl teddy a bow</span></span>
+        <div class="gender-row">
+          <div><small>You are</small>
+            <div class="seg" id="segFrom" role="group" aria-label="Your teddy">
+              <button type="button" data-g="m" aria-pressed="true"><i class="dot m"></i>Boy</button>
+              <button type="button" data-g="f" aria-pressed="false"><i class="dot f"></i>Girl</button>
+            </div></div>
+          <div><small>They are</small>
+            <div class="seg" id="segTo" role="group" aria-label="Their teddy">
+              <button type="button" data-g="m" aria-pressed="false"><i class="dot m"></i>Boy</button>
+              <button type="button" data-g="f" aria-pressed="true"><i class="dot f"></i>Girl</button>
+            </div></div>
+        </div>
+      </div>
+
+      <label class="field"><span class="lbl">3 · Your message</span>
+        <textarea id="msg" rows="6" maxlength="800" required></textarea>
+        <span class="hint"><span>Each line shows up on its own.</span><button type="button" class="linklike" id="suggest">Try another ↻</button></span>
+      </label>
+
+      <label class="field" id="questionWrap" hidden><span class="lbl">The big question</span>
+        <input id="question" maxlength="100">
+        <span class="hint"><span>Psst — the “No” button keeps running away until they say Yes. 😉</span></span>
+      </label>
+
+      <div class="field">
+        <span class="lbl">4 · Photos <span class="opt">optional · up to 5</span></span>
+        <label class="drop" id="drop">
+          <input type="file" id="photoInput" accept="image/*" multiple hidden>
+          <span class="drop-icon">📸</span>
+          <b>Add photos</b>
+          <small>Tap to choose or drag them here</small>
+        </label>
+        <div class="thumbs" id="thumbs"></div>
+        <p class="hint" id="photoHint" hidden></p>
+      </div>
+
+      <div class="field">
+        <span class="lbl">5 · Background music</span>
+        <div class="chips" id="musicChips"></div>
+        <div class="song-pick" id="songPick" hidden>
+          <input type="file" id="songInput" accept="audio/mpeg,audio/mp3,audio/mp4,audio/x-m4a,audio/aac,.mp3,.m4a" hidden>
+          <button type="button" class="btn ghost small" id="songBtn">🎵 Choose a song</button>
+          <span class="hint-text" id="songName">MP3 or M4A, up to 10 MB</span>
+        </div>
+        <div class="music-row">
+          <button type="button" class="btn ghost small" id="musicPreview">▶ Listen</button>
+          <span class="hint-text" id="musicHint"></span>
+        </div>
+      </div>
+
+      <p class="form-error" id="formError" role="alert" hidden></p>
+
+      <div class="cta-row">
+        <button class="btn ghost" type="button" id="previewBtn">👀 Preview free</button>
+        <button class="btn primary" type="submit">Get my link · <span class="price-tag">₹35</span></button>
+      </div>
+      <p class="pay-note">🔒 Secure payment by Razorpay: UPI, cards, netbanking, wallets. No account needed.<br>
+        By paying you agree to our <a href="/terms" target="_blank">Terms</a> and <a href="/refund" target="_blank">Refund Policy</a>.</p>
+    </form>
+
+    <section id="result" class="card result" hidden>
+      <div class="result-bears" id="resultBears"></div>
+      <h2>Paid ✓ Your link is ready 🎉</h2>
+      <p class="result-sub">Send this to <b id="resultTo"></b>. It opens their animated surprise.</p>
+      <div class="linkbox">
+        <input id="link" readonly aria-label="Your card link">
+        <button class="btn small" id="copyBtn" type="button">Copy</button>
+      </div>
+      <div class="actions">
+        <a class="btn wa" id="waBtn" target="_blank" rel="noopener">Send on WhatsApp</a>
+        <button class="btn ghost" id="shareBtn" type="button" hidden>Share…</button>
+        <a class="btn ghost" id="openBtn" target="_blank" rel="noopener">Open it 👀</a>
+      </div>
+      <button class="linklike again" id="againBtn" type="button">＋ Make another card</button>
+    </section>
+  </section>
+
+  <!-- faq -->
+  <section class="faq wrap">
+    <h2 class="sec-title" data-reveal>Good to know</h2>
+    <div class="faq-list" data-stagger>
+      <details data-reveal><summary>Is the preview really free?</summary><p>Yes. Make and preview as many cards as you like. You only pay when you tap “Get my link”.</p></details>
+      <details data-reveal><summary>What do I get for ₹35?</summary><p>A private link to your animated card with up to 5 photos, music and the teddy. It opens on any phone, with no app and nothing for the receiver to pay.</p></details>
+      <details data-reveal><summary>Can I change the card after paying?</summary><p>No, a paid card is final, so use the free preview to check names and spelling first.</p></details>
+      <details data-reveal><summary>How long does the link work?</summary><p>At least 12 months from the day you pay.</p></details>
+      <details data-reveal><summary>How can I pay?</summary><p>UPI, debit and credit cards, netbanking and wallets, through Razorpay. We never see your card or UPI details.</p></details>
+    </div>
+  </section>
+
+  <footer class="wrap">
+    <p>Made with WishCraft ✦ Your card is private. Only people with the link can open it.</p>
+    <nav class="footer-links">
+      <a href="/contact">Contact Us</a>
+      <a href="/terms">Terms &amp; Conditions</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/refund">Refund &amp; Cancellation</a>
+      <a href="/shipping">Shipping &amp; Delivery</a>
+    </nav>
+  </footer>
+</main>
+
+<!-- progress / messages while saving and paying -->
+<div class="modal" id="progress" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-live="polite">
+    <div class="spinner" id="pSpin"></div>
+    <div class="modal-emoji" id="pEmoji" hidden></div>
+    <p class="modal-text" id="pText"></p>
+    <div class="modal-actions" id="pActions"></div>
+  </div>
+</div>
+
+<!-- free preview runs inside this frame -->
+<div class="preview-modal" id="previewModal" hidden>
+  <iframe id="previewFrame" title="Card preview" allow="autoplay"></iframe>
+</div>
+
+<!-- ============ EXPERIENCE ============ -->
+<main id="experience" hidden>
+  <button class="mute" id="muteBtn" type="button" aria-label="Mute sound">🔊</button>
+  <div class="chapters" id="chapters" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+
+  <div class="preview-bar" id="previewBar" hidden>
+    <span id="pvLabel">👀 Preview · only you can see this</span>
+    <div>
+      <button class="btn ghost small" id="pvClose" type="button">✕ Edit</button>
+      <button class="btn glow small" id="pvPay" type="button">Get link · ₹35</button>
+    </div>
+  </div>
+
+  <section class="scene" id="s-status"><div class="inner">
+    <div class="spinner big" id="stSpin"></div>
+    <div class="mascot-slot" id="m-status"></div>
+    <h1 class="display smaller" id="stTitle"></h1>
+    <p class="sub" id="stSub"></p>
+    <div class="end-actions" id="stActions" hidden>
+      <button class="btn glow" id="stRetry" type="button" hidden>Try again</button>
+      <a class="btn ghost" href="/">✨ Make your own</a>
+    </div>
+  </div></section>
+
+  <section class="scene" id="s-intro"><div class="inner stagger">
+    <div class="mascot-slot" id="m-intro" style="--d:0"></div>
+    <h1 class="display" id="introTitle" style="--d:1"></h1>
+    <p class="sub" id="introSub" style="--d:2"></p>
+    <div style="--d:3"><button class="btn glow" id="introBtn" type="button">Open it ✨</button></div>
+    <p class="sound-hint" style="--d:4">🎧 turn your sound on</p>
+  </div></section>
+
+  <section class="scene" id="s-wrap"><div class="inner">
+    <div class="mascot-slot" id="m-wrap"></div>
+    <button class="gift" id="gift" type="button" aria-label="Open the gift" hidden>
+      <span class="light"></span><span class="box"></span><span class="lid"><span class="bow"></span></span>
+    </button>
+    <button class="envelope" id="envelope" type="button" aria-label="Open the letter" hidden>
+      <span class="env-back"></span><span class="letter" id="envLetter"></span>
+      <span class="env-front"></span><span class="flap"></span><span class="seal" id="seal"></span>
+    </button>
+    <p class="tap-hint" id="wrapHint"></p>
+  </div></section>
+
+  <section class="scene" id="s-message"><div class="inner">
+    <div class="letter-wrap" id="letterWrap">
+      <article class="letter-card" id="letterCard">
+        <div class="peek" id="m-msg"></div>
+        <span class="orn tl" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 45V20C3 10 10 3 20 3h25"/><path d="M11 45V24c0-7 6-13 13-13h21" opacity=".5"/><circle cx="3" cy="3" r="2.6" fill="currentColor" stroke="none"/><path d="M17 17c4-1.2 6.500 1 6 4s-3.500 3.800-5.500 2.500"/></svg></span>
+        <span class="orn tr" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 45V20C3 10 10 3 20 3h25"/><path d="M11 45V24c0-7 6-13 13-13h21" opacity=".5"/><circle cx="3" cy="3" r="2.6" fill="currentColor" stroke="none"/><path d="M17 17c4-1.2 6.500 1 6 4s-3.500 3.800-5.500 2.500"/></svg></span>
+        <span class="orn bl" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 45V20C3 10 10 3 20 3h25"/><path d="M11 45V24c0-7 6-13 13-13h21" opacity=".5"/><circle cx="3" cy="3" r="2.6" fill="currentColor" stroke="none"/><path d="M17 17c4-1.2 6.500 1 6 4s-3.500 3.800-5.500 2.500"/></svg></span>
+        <span class="orn br" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 45V20C3 10 10 3 20 3h25"/><path d="M11 45V24c0-7 6-13 13-13h21" opacity=".5"/><circle cx="3" cy="3" r="2.6" fill="currentColor" stroke="none"/><path d="M17 17c4-1.2 6.500 1 6 4s-3.500 3.800-5.500 2.500"/></svg></span>
+        <span class="postmark" aria-hidden="true"></span>
+        <div class="stamp" aria-hidden="true"><span class="stamp-art" id="stampArt"></span><small>WISHCRAFT</small></div>
+        <p class="dear" id="dear"></p>
+        <svg class="flourish" viewBox="0 0 160 14" aria-hidden="true"><path d="M2 7h62M96 7h62" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/><path d="M80 12C71 6 72 1.500 76 1.500 78 1.500 80 3 80 4.500 80 3 82 1.500 84 1.500 88 1.500 89 6 80 12z" fill="currentColor"/></svg>
+        <div class="lines" id="lines"></div>
+        <p class="sign" id="sign"></p>
+        <div class="wax" id="wax" aria-hidden="true"><span id="waxLetter"></span></div>
+        <span class="glare" aria-hidden="true"></span>
+      </article>
+    </div>
+    <p class="skip-hint" id="skipHint">tap the letter to skip ahead</p>
+    <button class="btn glow continue" id="continueBtn" type="button">Continue →</button>
+  </div></section>
+
+  <section class="scene" id="s-photos"><div class="inner">
+    <div class="mascot-slot" id="m-photos"></div>
+    <p class="eyebrow" id="photosTitle"></p>
+    <div class="polaroids gallery" id="polaroids"></div>
+    <button class="btn glow continue" id="photosBtn" type="button">Continue →</button>
+  </div></section>
+
+  <section class="scene" id="s-finale"><div class="inner">
+    <div id="f-cake" hidden>
+      <div class="mascot-slot" id="m-cake"></div>
+      <p class="eyebrow">Close your eyes, make a wish…</p>
+      <button class="cake" id="cake" type="button" aria-label="Blow out the candles">
+        <span class="plate"></span>
+        <span class="tier t1"></span>
+        <span class="tier t2"></span>
+        <span class="candles">
+          <span class="candle"><span class="flame"></span><span class="smoke"></span></span>
+          <span class="candle"><span class="flame"></span><span class="smoke"></span></span>
+          <span class="candle"><span class="flame"></span><span class="smoke"></span></span>
+        </span>
+      </button>
+      <p class="tap-hint" id="cakeHint">…then tap the candles to blow them out 🕯️</p>
+    </div>
+
+    <div id="f-question" hidden>
+      <div class="stage" id="stage"></div>
+      <h1 class="display" id="qText"></h1>
+      <div class="q-btns">
+        <button class="btn glow yes-btn" id="yesBtn" type="button">Yes 💖</button>
+        <button class="btn no-btn" id="noBtn" type="button">No</button>
+      </div>
+      <p class="tap-hint" id="qHint"></p>
+    </div>
+
+    <div id="f-celebrate" hidden><div class="mascot-slot" id="m-cel"></div></div>
+
+    <div class="finale-end" id="finaleEnd" hidden>
+      <div class="end-photo" id="endPhoto" hidden><img id="endPhotoImg" alt=""></div>
+      <h1 class="display reveal" id="endTitle"></h1>
+      <p class="sub" id="endSub"></p>
+      <p class="signature" id="endSign"></p>
+      <div class="end-actions">
+        <a class="btn glow" id="replyBtn" target="_blank" rel="noopener"></a>
+        <button class="btn ghost" id="replayBtn" type="button">↺ Replay</button>
+        <a class="btn ghost" id="makeBtn" href="/">✨ Make your own</a>
+      </div>
+      <p class="tap-hint small">tap anywhere for more ✨</p>
+    </div>
+  </div></section>
+</main>
+
+<script src="/teddy.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>

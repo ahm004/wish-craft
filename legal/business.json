@@ -1,0 +1,20 @@
+{
+  "_help": "Fill in every value that is still in [square brackets], then run: npm run legal",
+
+  "brand": "WishCraft",
+  "legalName": "[Your full legal name, or registered business name]",
+  "email": "[support@yourdomain.com]",
+  "phone": "[+91 XXXXX XXXXX]",
+  "address": "[Full postal address, City, State, PIN code]",
+  "city": "[City for legal jurisdiction, e.g. Mumbai]",
+  "grievanceName": "[Name of the person handling complaints, can be you]",
+  "grievanceEmail": "[grievance@yourdomain.com, can be the same as support]",
+  "website": "[https://your-site.vercel.app]",
+
+  "hours": "Monday to Saturday, 10:00 AM to 6:00 PM IST",
+  "price": "35",
+  "refundDays": "7",
+  "responseDays": "2",
+  "cardLifetime": "12 months",
+  "updated": "25 November 2026"
+}
