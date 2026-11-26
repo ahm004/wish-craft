@@ -1138,7 +1138,10 @@
   function mount(slot, name, thing, size) {
     const el = typeof slot === 'string' ? $(slot) : slot;
     el.textContent = '';
-    if (size) el.style.setProperty('--ts', size + 'px');
+    if (size) {
+      const k = innerWidth >= 1000 && innerHeight >= 760 ? 1.25 : 1; // a bit bigger on desktops
+      el.style.setProperty('--ts', 'min(' + Math.round(size * k) + 'px, ' + (size * 0.135 * k).toFixed(1) + 'vh, 60vw)');
+    }
     if (GIFS[name]) {
       const img = document.createElement('img');
       img.className = 'gif-slot'; img.src = GIFS[name]; img.alt = ''; img.loading = 'lazy';
@@ -1585,6 +1588,7 @@
     let i = 0;
     title.split(' ').forEach((word, wi, arr) => {
       const w = document.createElement('span'); w.className = 'w';
+      if (word.length > 11) w.style.whiteSpace = 'normal';
       for (const ch of word) {
         const s = document.createElement('span');
         s.className = 'ch'; s.textContent = ch; s.style.setProperty('--i', i++);

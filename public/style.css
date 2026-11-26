@@ -847,3 +847,148 @@ body.is-preview::after { color: rgba(255, 255, 255, .04); }
 /* the sign is gripped by both paws at its lower corners */
 .ted[data-prop="sign"] .t-arm.l { transform: rotate(-15deg); }
 .ted[data-prop="sign"] .t-arm.r { transform: rotate(15deg); }
+
+/* ================================================================
+   RESPONSIVE PASS: phones, notches, short screens, tablets, desktop
+   ================================================================ */
+
+/* ---- nothing may widen the page ---- */
+#creator { overflow-x: clip; }
+.hero2 { overflow-x: clip; }
+.hero-art .orb { width: min(380px, 88%); }
+.hero-art .ring-dash { width: min(430px, 98%); }
+
+/* ---- long names and long words wrap instead of overflowing ---- */
+.display, .sub, .dear, .signature, .eyebrow, .letter-card .lines p, .letter-card .sign, .mine-who, .mascot .bubble, .modal-text, .step h3, .moment h3 { overflow-wrap: anywhere; }
+.reveal .w { max-width: 100%; }
+
+/* ---- room for the top controls and for notches / home bars ---- */
+#experience { height: 100dvh; }
+.scene { padding: calc(env(safe-area-inset-top, 0px) + 58px) max(16px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 28px) max(16px, env(safe-area-inset-left, 0px)); }
+.mute { top: max(14px, env(safe-area-inset-top, 0px)); right: max(14px, env(safe-area-inset-right, 0px)); }
+.chapters { top: calc(env(safe-area-inset-top, 0px) + 26px); }
+.preview-bar { max-width: calc(100% - 24px); }
+
+/* ---- the peeking bear on the letter: bubble stays on screen, bear has room ---- */
+#s-message .inner { padding-top: 76px; }
+.letter-card .peek .bubble { left: auto; right: -4px; transform: translateY(10px) scale(.6); transform-origin: 85% 100%; max-width: min(240px, 72vw); }
+.letter-card .peek .bubble.show { transform: translateY(0) scale(1); }
+.letter-card .peek .bubble::after { left: auto; right: 40px; margin-left: 0; }
+
+/* ---- stage and photos scale with screen height as well as width ---- */
+.stage { height: min(clamp(220px, 64vw, 300px), 56vh); --ts: min(160px, 38vw, 26vh); }
+.gallery .polaroid { width: min(300px, 78vw, 64vh); }
+
+/* ---- fingers: bigger tap targets on touch screens ---- */
+@media (pointer: coarse) {
+  .btn.small, .chip, .seg button, .faq summary { min-height: 44px; }
+  .linklike { padding: 8px 4px; }
+  .thumb .rm { width: 32px; height: 32px; top: -12px; right: -12px; }
+}
+
+/* ---- small phones (320px wide) ---- */
+@media (max-width: 360px) {
+  .wrap { padding-left: 14px; padding-right: 14px; }
+  .card { padding: 18px 16px; }
+  .hero2 h1 { font-size: 2.35rem; }
+  .letter-card { padding: 32px 18px 42px; }
+  .letter-card .dear { font-size: 1.85rem; padding-right: 80px; }
+  .letter-card .lines p { font-size: 1.4rem; }
+  .letter-card .stamp { width: 48px; right: 22px; }
+  .postmark { display: none; }
+  .btn { padding: 12px 18px; }
+  .display { font-size: clamp(1.8rem, 9vw, 2.6rem); }
+}
+
+/* ---- short screens (small phones, browsers with big toolbars) ---- */
+@media (max-height: 680px) {
+  .scene { padding-top: calc(env(safe-area-inset-top, 0px) + 48px); padding-bottom: 18px; }
+  .mascot-slot { padding-top: 46px; }
+  .display { font-size: clamp(1.7rem, 7.5vw, 2.7rem); margin: 10px 0 8px; }
+  .sub { font-size: 1.02rem; margin-bottom: 16px; }
+  .tap-hint { margin-top: 14px; }
+  .sound-hint { display: none; }
+  #s-message .inner { padding-top: 66px; }
+  .eyebrow { font-size: 1.2rem; margin-bottom: 10px; }
+}
+
+/* ---- phones held sideways: put things side by side ---- */
+@media (orientation: landscape) and (max-height: 520px) {
+  .scene { padding: calc(env(safe-area-inset-top, 0px) + 40px) max(20px, env(safe-area-inset-right, 0px)) 14px max(20px, env(safe-area-inset-left, 0px)); }
+  .scene .inner { max-width: 820px; }
+  .chapters { top: 16px; }
+  .mute { top: 10px; }
+  .display { font-size: clamp(1.5rem, 4.4vw, 2.3rem); margin: 4px 0; }
+  .sub { font-size: .98rem; margin: 0 0 10px; }
+  .mascot-slot { padding-top: 40px; }
+  .big-emoji { font-size: 3.6rem; }
+
+  #s-intro .inner { display: grid; grid-template-columns: auto 1fr; column-gap: 30px; align-items: center; text-align: left; }
+  #s-intro #m-intro { grid-row: 1 / span 4; --ts: min(210px, 50vh) !important; }
+  #s-intro .sub { margin-left: 0; }
+  #s-intro .inner > div:not(.mascot-slot) { justify-self: start; }
+
+  #s-wrap .inner { display: grid; grid-template-columns: auto auto; justify-content: center; align-items: center; column-gap: 40px; }
+  #s-wrap #m-wrap { --ts: min(170px, 42vh) !important; }
+  #s-wrap .tap-hint { grid-column: 1 / -1; margin-top: 4px; }
+  .envelope { margin-top: 0; }
+
+  #s-message .inner { max-width: 760px; padding-top: 70px; }
+  .letter-card .lines p { font-size: 1.45rem; }
+
+  #f-cake { display: grid; grid-template-columns: auto auto; justify-content: center; align-items: center; column-gap: 34px; }
+  #f-cake .mascot-slot { grid-row: 1 / span 3; --ts: min(150px, 38vh) !important; }
+  #f-cake .eyebrow { margin: 0 0 4px; }
+  #f-cake .cake { margin: 0 auto; }
+  #f-cake .tap-hint { margin-top: 0; }
+  #f-cake.done .cake { margin-bottom: -76px; }
+
+  #f-question { display: grid; grid-template-columns: 1.15fr .85fr; column-gap: 24px; align-items: center; text-align: left; }
+  #f-question .stage { grid-row: 1 / span 3; margin: 0; width: 100%; height: min(260px, 70vh); --ts: min(150px, 22vw, 34vh); }
+  #f-question .display { text-align: left; font-size: clamp(1.4rem, 3.6vw, 2rem); }
+  #f-question .q-btns { justify-content: flex-start; margin-top: 8px; min-height: 0; }
+  #f-question .tap-hint { margin-top: 8px; }
+
+  .finale-end { margin-top: 0; }
+  .end-photo, .end-photo.heart { transform: scale(.8); margin-bottom: -16px; }
+}
+
+/* ---- tablets and small laptops ---- */
+@media (min-width: 641px) {
+  .steps-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .step { padding-left: 16px; padding-right: 16px; }
+}
+@media (min-width: 641px) and (max-width: 899px) {
+  .moment-row { display: grid; grid-template-columns: repeat(3, 1fr); overflow: visible; padding-top: 170px; row-gap: 170px; }
+  .moment { flex: initial; }
+}
+@media (min-width: 760px) {
+  .hero2 { grid-template-columns: 1.05fr .95fr; text-align: left; }
+  .hero-sub { margin-left: 0; margin-right: 0; }
+  .hero-cta { justify-content: flex-start; }
+  .hero-art { order: 0; min-height: 400px; }
+}
+
+/* ---- big screens: let the card experience use the room ---- */
+@media (min-width: 1000px) and (min-height: 760px) {
+  .scene .inner { max-width: 680px; }
+  .display { font-size: clamp(3rem, 4.4vw, 4.6rem); }
+  .sub { font-size: 1.25rem; max-width: 36ch; }
+  .letter-card { --lh: 2.45rem; padding: 46px 40px 54px; }
+  .letter-card .dear { font-size: 2.7rem; }
+  .letter-card .lines p { font-size: 1.9rem; }
+  .letter-card .sign { font-size: 2.3rem; }
+  .letter-card .stamp { width: 62px; top: 40px; right: 40px; }
+  .stage { width: min(760px, 100%); height: 330px; --ts: min(210px, 26vh); }
+  .gallery .polaroid { width: min(340px, 60vh); }
+  .ted-pair .mascot { --ts: 200px; }
+}
+@media (max-width: 899px) { .gallery .polaroid:nth-child(odd), .gallery .polaroid:nth-child(even) { align-self: center; margin-left: 0; margin-right: 0; } }
+@media (min-width: 900px) { .gallery .polaroid:nth-child(odd) { margin-left: 8%; } .gallery .polaroid:nth-child(even) { margin-right: 8%; } }
+
+/* ---- review fixes ---- */
+.step-n { top: -15px; left: 16px; box-shadow: 0 6px 14px -4px rgba(0, 0, 0, .5); }
+@media (max-height: 680px) { #s-message .inner { padding-top: 84px; } }
+@media (orientation: landscape) and (max-height: 520px) { #s-message .inner { padding-top: 88px; } }
+@media (max-height: 520px) { .result-bears { display: none; } }
+.is-preview .scene { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 96px); }
