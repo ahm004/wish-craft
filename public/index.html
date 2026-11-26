@@ -1,13 +1,35 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-IN">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>WishCraft — send a little magic</title>
-<meta name="description" content="Animated birthday wishes, proposals and apologies with a teddy bear, your photos and music. Preview free, ₹35 to send.">
-<meta property="og:title" content="Someone made something special for you ✨">
-<meta property="og:description" content="Tap to open your surprise.">
+<title>WishCraft: Animated Birthday, Proposal & Valentine Cards</title>
+<meta name="description" content="Make an animated birthday, proposal or Valentine card with cute teddies, your photos and music. Preview free, pay ₹35, send the link on WhatsApp.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-48.png" sizes="48x48" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#120b24">
+<!--seo:start-->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="WishCraft">
+<meta property="og:locale" content="en_IN">
+<meta property="og:title" content="WishCraft: Animated Birthday, Proposal &amp; Valentine Cards">
+<meta property="og:description" content="Make an animated birthday, proposal or Valentine card with cute teddies, your photos and music. Preview free, pay ₹35, send the link on WhatsApp.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="WishCraft: Animated Birthday, Proposal &amp; Valentine Cards">
+<meta name="twitter:description" content="Make an animated birthday, proposal or Valentine card with cute teddies, your photos and music. Preview free, pay ₹35, send the link on WhatsApp.">
+<meta property="og:url" content="https://wish-craft-psi.vercel.app/">
+<meta property="og:image" content="https://wish-craft-psi.vercel.app/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Two teddy bears, one holding a rose: WishCraft animated cards">
+<meta name="twitter:image" content="https://wish-craft-psi.vercel.app/og.jpg">
+<link rel="canonical" href="https://wish-craft-psi.vercel.app/">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://wish-craft-psi.vercel.app/#org","name":"WishCraft","url":"https://wish-craft-psi.vercel.app/","logo":"https://wish-craft-psi.vercel.app/icon-512.png"},{"@type":"WebSite","@id":"https://wish-craft-psi.vercel.app/#site","url":"https://wish-craft-psi.vercel.app/","name":"WishCraft","inLanguage":"en-IN","publisher":{"@id":"https://wish-craft-psi.vercel.app/#org"}},{"@type":"WebApplication","name":"WishCraft","url":"https://wish-craft-psi.vercel.app/","description":"Make an animated birthday, proposal or Valentine card with cute teddies, your photos and music. Preview free, pay ₹35, send the link on WhatsApp.","applicationCategory":"LifestyleApplication","operatingSystem":"Any (web browser)","image":"https://wish-craft-psi.vercel.app/og.jpg","inLanguage":"en-IN","offers":{"@type":"Offer","price":"35","priceCurrency":"INR","availability":"https://schema.org/InStock"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is the preview really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. Make and preview as many cards as you like. You only pay when you tap “Get my link”."}},{"@type":"Question","name":"What do I get for ₹35?","acceptedAnswer":{"@type":"Answer","text":"A private link to your animated card with up to 5 photos, music and the teddy. It opens on any phone, with no app and nothing for the receiver to pay."}},{"@type":"Question","name":"Can I change the card after paying?","acceptedAnswer":{"@type":"Answer","text":"No, a paid card is final, so use the free preview to check names and spelling first."}},{"@type":"Question","name":"How long does the link work?","acceptedAnswer":{"@type":"Answer","text":"At least 12 months from the day you pay."}},{"@type":"Question","name":"How can I pay?","acceptedAnswer":{"@type":"Answer","text":"UPI, debit and credit cards, netbanking and wallets, through Razorpay. We never see your card or UPI details."}}]}]}</script>
+<!--seo:end-->
+<script>/* card links and previews show the card, not the home page */(function(){var l=location;if(l.pathname.indexOf('/w/')===0||/[?&]preview=1/.test(l.search)||l.hash.indexOf('#w=')===0)document.documentElement.classList.add('is-card');})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=DM+Sans:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,900;1,9..144,700&display=swap" rel="stylesheet">
@@ -18,7 +40,7 @@
 <canvas id="fx" aria-hidden="true"></canvas>
 
 <!-- ============ CREATOR / LANDING ============ -->
-<main id="creator" hidden>
+<div id="creator">
   <div class="scroll-progress" id="scrollBar" aria-hidden="true"></div>
 
   <header class="topbar wrap">
@@ -26,12 +48,13 @@
     <a class="btn primary small" href="#make">Make a card</a>
   </header>
 
+  <main>
   <!-- hero -->
   <section class="hero2 wrap">
     <div class="hero-copy" data-reveal>
       <p class="kicker">Animated cards · just <b class="price-tag">₹35</b></p>
       <h1>Say it with a <em>little magic</em>.</h1>
-      <p class="hero-sub">A gift box that opens, a teddy that cries when she says no, your photos, your song, and a link you can send on WhatsApp.</p>
+      <p class="hero-sub">Animated birthday wishes, marriage proposals and Valentine cards: a gift box that opens, a teddy that cries when she says no, your photos, your song, and a link you can send on WhatsApp.</p>
       <div class="hero-cta">
         <a class="btn primary" href="#make">Make my card</a>
         <button class="btn ghost" id="demoBtn" type="button">▶ Watch a demo</button>
@@ -75,7 +98,15 @@
   <section class="moments wrap" id="moments">
     <h2 class="sec-title" data-reveal>Pick your moment</h2>
     <p class="sec-sub" data-reveal>Tap a card to start. Say hi to the bears first, they like attention. 🐻</p>
-    <div class="moment-row" id="momentRow" data-stagger></div>
+    <div class="moment-row" id="momentRow" data-stagger>
+      <div class="moment" data-theme="birthday" data-key="birthday" data-reveal role="button" tabindex="0"><div class="moment-bear"></div><h3>Birthday</h3><p>A gift, a cake with candles and a party-hat bear.</p><span class="go">Make this →</span></div>
+      <div class="moment" data-theme="valentine" data-key="valentine" data-reveal role="button" tabindex="0"><div class="moment-bear"></div><h3>Valentine</h3><p>A sealed love letter and a &quot;No&quot; button that runs away.</p><span class="go">Make this →</span></div>
+      <div class="moment" data-theme="proposal" data-key="proposal" data-reveal role="button" tabindex="0"><div class="moment-bear"></div><h3>Proposal</h3><p>A teddy runs in with a rose and asks the big question.</p><span class="go">Make this →</span></div>
+      <div class="moment" data-theme="anniversary" data-key="anniversary" data-reveal role="button" tabindex="0"><div class="moment-bear"></div><h3>Anniversary</h3><p>Two bears hugging with hearts everywhere.</p><span class="go">Make this →</span></div>
+      <div class="moment" data-theme="congrats" data-key="congrats" data-reveal role="button" tabindex="0"><div class="moment-bear"></div><h3>Congrats</h3><p>Fireworks, confetti and a golden trophy.</p><span class="go">Make this →</span></div>
+      <div class="moment" data-theme="thanks" data-key="thanks" data-reveal role="button" tabindex="0"><div class="moment-bear"></div><h3>Thank you</h3><p>A bouquet and a heartfelt thank-you.</p><span class="go">Make this →</span></div>
+      <div class="moment" data-theme="sorry" data-key="sorry" data-reveal role="button" tabindex="0"><div class="moment-bear"></div><h3>Sorry</h3><p>A sad bear, flowers and one big &quot;forgive me&quot;.</p><span class="go">Make this →</span></div>
+    </div>
   </section>
 
   <!-- make -->
@@ -193,9 +224,20 @@
     </div>
   </section>
 
+  </main>
+
   <footer class="wrap">
     <p>Made with WishCraft ✦ Your card is private. Only people with the link can open it.</p>
-    <nav class="footer-links">
+    <nav class="footer-links" aria-label="Card ideas">
+      <a href="/birthday-card">Birthday cards</a>
+      <a href="/proposal-card">Proposal cards</a>
+      <a href="/valentine-card">Valentine cards</a>
+      <a href="/anniversary-card">Anniversary cards</a>
+      <a href="/congratulations-card">Congratulations cards</a>
+      <a href="/thank-you-card">Thank-you cards</a>
+      <a href="/sorry-card">Sorry cards</a>
+    </nav>
+    <nav class="footer-links" aria-label="Policies">
       <a href="/contact">Contact Us</a>
       <a href="/terms">Terms &amp; Conditions</a>
       <a href="/privacy">Privacy Policy</a>
@@ -203,7 +245,7 @@
       <a href="/shipping">Shipping &amp; Delivery</a>
     </nav>
   </footer>
-</main>
+</div>
 
 <!-- progress / messages while saving and paying -->
 <div class="modal" id="progress" hidden>
@@ -221,7 +263,7 @@
 </div>
 
 <!-- ============ EXPERIENCE ============ -->
-<main id="experience" hidden>
+<div id="experience" role="region" aria-label="Your card" hidden>
   <button class="mute" id="muteBtn" type="button" aria-label="Mute sound">🔊</button>
   <div class="chapters" id="chapters" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
 
@@ -236,7 +278,7 @@
   <section class="scene" id="s-status"><div class="inner">
     <div class="spinner big" id="stSpin"></div>
     <div class="mascot-slot" id="m-status"></div>
-    <h1 class="display smaller" id="stTitle"></h1>
+    <h2 class="display smaller" id="stTitle"></h2>
     <p class="sub" id="stSub"></p>
     <div class="end-actions" id="stActions" hidden>
       <button class="btn glow" id="stRetry" type="button" hidden>Try again</button>
@@ -246,7 +288,7 @@
 
   <section class="scene" id="s-intro"><div class="inner stagger">
     <div class="mascot-slot" id="m-intro" style="--d:0"></div>
-    <h1 class="display" id="introTitle" style="--d:1"></h1>
+    <h2 class="display" id="introTitle" style="--d:1"></h2>
     <p class="sub" id="introSub" style="--d:2"></p>
     <div style="--d:3"><button class="btn glow" id="introBtn" type="button">Open it ✨</button></div>
     <p class="sound-hint" style="--d:4">🎧 turn your sound on</p>
@@ -312,7 +354,7 @@
 
     <div id="f-question" hidden>
       <div class="stage" id="stage"></div>
-      <h1 class="display" id="qText"></h1>
+      <h2 class="display" id="qText"></h2>
       <div class="q-btns">
         <button class="btn glow yes-btn" id="yesBtn" type="button">Yes 💖</button>
         <button class="btn no-btn" id="noBtn" type="button">No</button>
@@ -324,7 +366,7 @@
 
     <div class="finale-end" id="finaleEnd" hidden>
       <div class="end-photo" id="endPhoto" hidden><img id="endPhotoImg" alt=""></div>
-      <h1 class="display reveal" id="endTitle"></h1>
+      <h2 class="display reveal" id="endTitle"></h2>
       <p class="sub" id="endSub"></p>
       <p class="signature" id="endSign"></p>
       <div class="end-actions">
@@ -335,7 +377,7 @@
       <p class="tap-hint small">tap anywhere for more ✨</p>
     </div>
   </div></section>
-</main>
+</div>
 
 <script src="/teddy.js"></script>
 <script src="/app.js"></script>

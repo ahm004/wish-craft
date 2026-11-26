@@ -1,6 +1,7 @@
 {
   "outputDirectory": "public",
   "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
     { "source": "/w/:id", "destination": "/index.html" }
   ],
@@ -10,6 +11,31 @@
       "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    },
+    {
+      "source": "/w/(.*)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" },
+        { "key": "Cache-Control", "value": "no-store" }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+      ]
+    },
+    {
+      "source": "/(og.jpg|icon-192.png|icon-512.png|apple-touch-icon.png|favicon.svg|favicon-48.png)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=604800" }
+      ]
+    },
+    {
+      "source": "/manifest.webmanifest",
+      "headers": [
+        { "key": "Content-Type", "value": "application/manifest+json" }
       ]
     }
   ]

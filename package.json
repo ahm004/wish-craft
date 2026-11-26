@@ -6,7 +6,9 @@
   "description": "Animated wish & proposal cards, paid share links via Razorpay",
   "scripts": {
     "dev": "node dev-server.js",
-    "legal": "node legal/build.js"
+    "legal": "node legal/build.js",
+    "seo": "node seo/build.js",
+    "images": "node seo/make-images.mjs"
   },
   "engines": {
     "node": ">=18"

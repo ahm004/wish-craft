@@ -992,3 +992,22 @@ body.is-preview::after { color: rgba(255, 255, 255, .04); }
 @media (orientation: landscape) and (max-height: 520px) { #s-message .inner { padding-top: 88px; } }
 @media (max-height: 520px) { .result-bears { display: none; } }
 .is-preview .scene { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 96px); }
+
+/* ================= SEO pages and structure ================= */
+html.is-card #creator { display: none; }
+.seo-hero { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; margin: 6px 0 10px; }
+.seo-hero h1 { font: 900 clamp(1.9rem, 5.4vw, 3rem)/1.08 var(--display); letter-spacing: -.02em; margin: 8px 0 12px; text-wrap: balance; }
+.seo-bear { --ts: 190px; padding-top: 30px; }
+.seo-bear .mascot .bubble { display: none; }
+.legal-card .mini { font-size: .88rem; color: color-mix(in srgb, var(--paper-ink) 65%, transparent); margin-top: -4px; }
+.legal-card .btn.primary { color: #1a0b18; text-decoration: none; }
+.crumbs { font-size: .85rem; color: color-mix(in srgb, var(--paper-ink) 60%, transparent); margin: 0 0 4px; }
+.crumbs a { font-weight: 500; }
+.legal-card blockquote { margin: 12px 0; padding: 12px 18px; border-left: 4px solid var(--accent2); background: rgba(58, 36, 51, .05); border-radius: 0 12px 12px 0; font: italic 500 1.05rem/1.55 var(--display); }
+.legal-card details { margin: 8px 0; padding: 4px 14px; border-radius: 12px; background: rgba(58, 36, 51, .05); }
+.legal-card summary { cursor: pointer; font-weight: 700; padding: 10px 0; }
+.legal-card details p { margin: 0 0 12px; }
+.more-links { display: flex; flex-wrap: wrap; gap: 8px 10px; }
+.more-links a { padding: 8px 14px; border-radius: 99px; background: rgba(58, 36, 51, .07); text-decoration: none; font-size: .92rem; }
+.legal-top a.btn.primary { color: #1a0b18; }
+@media (max-width: 640px) { .seo-hero { grid-template-columns: 1fr; } .seo-bear { order: -1; --ts: 150px; } }

@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /w/
+Disallow: /api/
+
+Sitemap: https://wish-craft-psi.vercel.app/sitemap.xml

@@ -107,6 +107,29 @@ Only use GIFs you have the right to use. Tenor and Giphy GIFs belong to their cr
 To change the wording itself, edit `legal/pages/*.html` and run `npm run legal` again.
 Don't edit `public/terms.html` and the others directly, because they get overwritten.
 
+## SEO (getting found on Google)
+
+What's built in: a proper title and description, social-preview image, favicon and app icons, structured data
+(JSON-LD), `robots.txt`, `sitemap.xml`, and one page per occasion (`/proposal-card`, `/birthday-card`, ...)
+with its own text, message ideas and questions. Private card links (`/w/...`) and the API are kept out of search results.
+
+**One step needs your real web address:**
+1. In `legal/business.json` set `"website"` to your live address, for example `https://yourname.vercel.app`
+   (or your own domain). Fill in the other details there too, because the policy pages are public.
+2. Run `npm run seo` and `npm run legal`, then commit and push. Vercel redeploys.
+3. Check it any time with `node seo/check.mjs`.
+
+**Then tell Google about the site (this is what gets you listed):**
+1. Open https://search.google.com/search-console and add your site as a "URL prefix" property.
+2. Choose the "HTML tag" verification and copy the `content="..."` value from the tag.
+   Paste just that value into `"googleVerification"` in `legal/business.json`, run `npm run seo`, push, then click Verify.
+3. Under Sitemaps, submit `sitemap.xml`. Under URL Inspection, paste your home address and press "Request indexing".
+4. Wait. A new site usually appears within days to a few weeks. Ranking for general phrases like "birthday card"
+   takes longer and depends on how many other sites link to yours.
+
+To change the occasion page wording, edit `seo/content.js` and run `npm run seo`.
+To redraw the preview image and icons, run `npm run images`.
+
 ## Changing the price
 
 Set `PRICE_INR` (server, the real price) **and** `PRICE_INR` at the top of `public/app.js`

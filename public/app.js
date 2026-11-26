@@ -655,19 +655,11 @@
     // step bears
     $$('.step-bear').forEach((el) => el.appendChild(petBear(Teddy.make({ mood: 'happy', prop: el.dataset.bear })).el));
 
-    // "pick your moment" cards, each with its own bear and a 3D tilt
-    const row = $('#momentRow');
-    Object.entries(OCCASIONS).forEach(([key, occ]) => {
-      const b = document.createElement('div');
-      b.className = 'moment'; b.dataset.theme = key; b.setAttribute('data-reveal', '');
-      b.setAttribute('role', 'button'); b.tabIndex = 0;
-      const holder = document.createElement('div'); holder.className = 'moment-bear';
-      const L = BEAR_LOOK[key];
-      holder.appendChild(petBear(Teddy.make({ mood: L.mood, prop: L.prop, hat: !!L.hat, gender: L.gender || '' })).el);
-      const h = document.createElement('h3'); h.textContent = occ.label;
-      const p = document.createElement('p'); p.textContent = MOMENT_TAGLINE[key];
-      const go = document.createElement('span'); go.className = 'go'; go.textContent = 'Make this →';
-      b.append(holder, h, p, go);
+    // "pick your moment" cards (real HTML for search engines), each gets its own bear and a 3D tilt
+    $$('.moment').forEach((b) => {
+      const key = b.dataset.key, L = BEAR_LOOK[key];
+      if (!L || !OCCASIONS[key]) return;
+      b.querySelector('.moment-bear').appendChild(petBear(Teddy.make({ mood: L.mood, prop: L.prop, hat: !!L.hat, gender: L.gender || '' })).el);
       b.addEventListener('click', (e) => { if (e.target.closest('.mascot')) return; onPick(key); });
       b.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPick(key); } });
       if (canHover && !reduceMotion) {
@@ -678,7 +670,6 @@
         });
         b.addEventListener('pointerleave', () => { b.style.setProperty('--rx', '0deg'); b.style.setProperty('--ry', '0deg'); });
       }
-      row.appendChild(b);
     });
 
     // scroll reveal, with a stagger inside lists
@@ -943,6 +934,11 @@
 
     initLanding({ onPick: (key) => { select(key); $('#make').scrollIntoView({ behavior: 'smooth' }); setTimeout(() => $('#to').focus({ preventScroll: true }), 700); } });
     select('birthday');
+    const wanted = new URLSearchParams(location.search).get('occasion');
+    if (wanted && OCCASIONS[wanted]) {
+      select(wanted);
+      setTimeout(() => $('#make').scrollIntoView({ behavior: 'smooth' }), 300);
+    }
     renderMine();
     refreshMine();
   }
