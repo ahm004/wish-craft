@@ -1011,3 +1011,12 @@ html.is-card #creator { display: none; }
 .more-links a { padding: 8px 14px; border-radius: 99px; background: rgba(58, 36, 51, .07); text-decoration: none; font-size: .92rem; }
 .legal-top a.btn.primary { color: #1a0b18; }
 @media (max-width: 640px) { .seo-hero { grid-template-columns: 1fr; } .seo-bear { order: -1; --ts: 150px; } }
+
+/* "Your cards" lines wrap instead of being cut off */
+.mine-who { white-space: normal; overflow: visible; text-overflow: clip; }
+
+/* ---- price and discount ---- */
+.list-price { opacity: .65; font-weight: 500; text-decoration: line-through; text-decoration-thickness: 2px; }
+.btn.primary .list-price, .pay-note .list-price { opacity: .6; }
+.off-badge { display: inline-block; margin-left: 4px; padding: 2px 10px; border-radius: 99px; background: #25d366; color: #062b14; font-size: .78rem; font-weight: 800; letter-spacing: .02em; vertical-align: 1px; }
+[hidden].list-price, [hidden].off-badge { display: none; }

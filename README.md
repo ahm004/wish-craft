@@ -1,7 +1,7 @@
-# WishCraft ✨: paid animated cards (₹35)
+# WishCraft ✨: paid animated cards (₹30, a ₹5 discount on ₹35)
 
 People make an animated wish, proposal or apology card with photos and music, preview it for free,
-pay ₹35 through Razorpay, and get a short link (`yoursite.com/w/AbC123xy`) to send.
+pay ₹30 through Razorpay, and get a short link (`yoursite.com/w/AbC123xy`) to send.
 A card **only opens after it is paid**. The server checks every payment.
 
 ```
@@ -30,20 +30,61 @@ npm run dev
 
 Open http://localhost:3000. With no keys set, it runs in **TEST MODE**:
 - cards and photos are saved in a local `.data/` folder
-- the payment step shows a "Pretend to pay ₹35" button (no real money)
+- the payment step shows a "Pretend to pay ₹30" button (no real money)
 
 Test payments are **automatically disabled online** (on Vercel), so this can never be abused there.
 
 ---
 
-## 2. Supabase (database + photo storage), free
+## 2. Set up Supabase (database + photo storage), free
 
-1. Create a project at https://supabase.com (pick the **Mumbai** region).
-2. Go to **SQL Editor → New query**, paste everything from `supabase/schema.sql`, click **Run**.
-3. Go to **Project Settings → API** and copy:
-   - Project URL → `SUPABASE_URL`
-   - `service_role` key (or a "secret" key) → `SUPABASE_SERVICE_KEY`
-   ⚠️ Keep this key secret. It only goes in `.env` / Vercel settings, never in `public/`.
+Supabase keeps your cards and photos (briefly: they are deleted after 7 days). The site needs it when it is online.
+
+**Step 1: create the project**
+1. Go to https://supabase.com and sign up (GitHub or Google works).
+2. Click **New project**. Name it `wishcraft`, set a database password (save it somewhere, the site does not need it),
+   choose the region **Mumbai** (closest to India) and the **Free** plan. Click **Create**. Wait about 2 minutes.
+
+**Step 2: create the table and the photo bucket**
+1. In the left menu open **SQL Editor** → **New query**.
+2. Open `supabase/schema.sql` from this project, copy everything, paste it in, click **Run**. You should see "Success".
+3. Open **Storage** in the left menu: you should see a bucket called `wish-media` marked **Private**.
+
+**Step 3: copy two things from Supabase**
+Open **Project Settings** (gear icon) → **API** (it may be called **API Keys** or **Data API**).
+- **Project URL**, for example `https://abcdefghijklmnopqrst.supabase.co`
+- The **secret** key: either the one starting with `sb_secret_`, or the long **service_role** key (click Reveal).
+  ⚠️ Do **not** use the "anon" or "publishable" key. Never share the secret key, put it in `public/`, or commit it.
+
+**Step 4: paste them where the site can read them**
+
+*On Vercel (this is what your live site uses):* Project → **Settings → Environment Variables**. Add these, one at a time
+(tick Production; no quotes, no spaces, no slash at the end of the URL):
+
+| Name | Value |
+|---|---|
+| `SUPABASE_URL` | your Project URL |
+| `SUPABASE_SERVICE_KEY` | your secret key |
+| `SUPABASE_BUCKET` | `wish-media` |
+| `PRICE_INR` | `30` |
+| `LIST_PRICE_INR` | `35` |
+| `CRON_SECRET` | any long random text |
+
+Then go to **Deployments**, open the latest one, and click **Redeploy**. Settings only apply to new deployments.
+
+*On your computer (optional):* the same lines go in the `.env` file:
+```
+SUPABASE_URL=https://abcdefghijklmnopqrst.supabase.co
+SUPABASE_SERVICE_KEY=sb_secret_xxxxxxxxxxxxxxxx
+SUPABASE_BUCKET=wish-media
+```
+Careful: once these are filled in, testing on your computer uses your real Supabase (and real Razorpay if those keys are in
+there too). To test safely, keep `.env` empty (the site then uses a local test mode) and use Vercel for the real thing.
+
+**Step 5: check it works**
+- Run `npm run check:setup`. It reads your `.env` and tells you in plain words what is missing or wrong.
+- On the live site, make a test card with a photo. In Supabase: **Table Editor → cards** shows a new row, and
+  **Storage → wish-media** shows a folder with the photo. After 7 days both are deleted automatically.
 
 ## 3. Razorpay (payments)
 
@@ -67,7 +108,8 @@ Test payments are **automatically disabled online** (on Vercel), so this can nev
    | `SUPABASE_BUCKET` | `wish-media` |
    | `RAZORPAY_KEY_ID` | from step 3 |
    | `RAZORPAY_KEY_SECRET` | from step 3 |
-   | `PRICE_INR` | `35` |
+   | `PRICE_INR` | `30` (what is charged) |
+   | `LIST_PRICE_INR` | `35` (shown crossed out) |
 
 4. **Redeploy** so the variables take effect.
 5. (Recommended) Razorpay **Settings → Webhooks → Add**:
@@ -132,16 +174,24 @@ To redraw the preview image and icons, run `npm run images`.
 
 ## Changing the price
 
-Set `PRICE_INR` (server, the real price) **and** `PRICE_INR` at the top of `public/app.js`
-plus the "₹35" text in `public/index.html` (display only).
+The real price is `PRICE_INR` on the server (`.env` and Vercel). `LIST_PRICE_INR` is the usual price shown crossed out.
+The pages ask `/api/price` for these numbers, so the buttons always show what is charged. Static text such as
+SEO descriptions comes from `PRICE`/`LIST_PRICE` in `seo/content.js` and `price`/`listPrice`/`discount` in
+`legal/business.json`: update those, then run `npm run seo` and `npm run legal`.
 
 ## Good to know
 
-- **Fees:** Razorpay takes roughly 2% + GST per payment (about ₹0.8 on ₹35).
+- **Fees:** Razorpay takes roughly 2% + GST per payment (about ₹0.7 on ₹30).
 - **Hosting terms:** Vercel's free Hobby plan is for non-commercial use. Once you're selling, Vercel
   expects the Pro plan, so check their current pricing.
-- **Storage:** Supabase free tier gives 1 GB of files. Photos are compressed to about 200 KB each, and songs
-  are up to 10 MB. Songs use most of the space, so watch usage in the Supabase dashboard.
-  Free projects pause after a week with no activity. Opening the site wakes them up.
-- **Unpaid cards:** there's an optional cleanup query at the bottom of `supabase/schema.sql`.
+- **Nothing is kept for long.** Songs are never uploaded (the music is built in). A card and its photos are
+  deleted automatically 7 days after payment, and unpaid cards after 24 hours. This is done by `/api/cleanup`,
+  which Vercel runs once a day (see "crons" in `vercel.json`), and also whenever a new card is made.
+  To use it: add a `CRON_SECRET` environment variable in Vercel (any long random text). To change the 7 days,
+  set `CARD_LIFETIME_DAYS` in Vercel, and update the words "7 days" in `legal/business.json` (`cardLifetime`),
+  `public/index.html` and `seo/content.js`, then run `npm run legal` and `npm run seo`.
+- **Storage:** because photos are deleted after 7 days, Supabase's free 1 GB holds about 700 cards at a time.
+  The daily clean-up also counts as activity, which helps stop the free project from being paused for inactivity.
+- **Updating an existing Supabase project:** open SQL Editor and run `supabase/schema.sql` again. It adds the new
+  `expires_at` column, limits the bucket to photos, and gives already-paid cards a 7-day expiry.
 - **Customize:** occasions, messages and colours are in the `OCCASIONS` list at the top of `public/app.js`.

@@ -35,7 +35,7 @@ p{position:absolute;left:70px;top:430px;margin:0;width:600px;font:500 31px/1.35 
 <div class="brand"><i>✦</i> WishCraft</div>
 <h1>Say it with a <em>little magic.</em></h1>
 <p>Animated birthday, proposal &amp; Valentine cards with teddies, photos and music.</p>
-<div class="pill">Preview free · just ₹35</div>
+<div class="pill">Preview free · ₹30 <s style="opacity:.6;font-weight:500">₹35</s></div>
 <div id="stage"></div>
 <script src="${ted}"></script>
 <script>const s=document.getElementById('stage');const a=Teddy.make({gender:'m',mood:'happy',prop:'rose'}),b=Teddy.make({gender:'f',mood:'shy'});a.el.classList.add('him');b.el.classList.add('her');s.append(b.el,a.el);document.querySelectorAll('*').forEach(e=>e.style.animation='none');document.fonts.ready.then(()=>document.title='ready')</script>`,

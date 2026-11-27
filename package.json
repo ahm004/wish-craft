@@ -8,7 +8,8 @@
     "dev": "node dev-server.js",
     "legal": "node legal/build.js",
     "seo": "node seo/build.js",
-    "images": "node seo/make-images.mjs"
+    "images": "node seo/make-images.mjs",
+    "check:setup": "node scripts/check-setup.mjs"
   },
   "engines": {
     "node": ">=18"

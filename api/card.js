@@ -1,7 +1,7 @@
-// GET /api/card?id=...: what the recipient's browser loads. Only paid cards are returned.
+// GET /api/card?id=...: what the recipient's browser loads. Only paid, unexpired cards are returned.
 import { route, send, query, httpError } from './_lib/http.js';
-import { ID_PATTERN } from './_lib/rules.js';
-import { getCard, updateCard, signReads } from './_lib/store.js';
+import { ID_PATTERN, CARD_LIFETIME_DAYS } from './_lib/rules.js';
+import { getCard, updateCard, signReads, deleteCards } from './_lib/store.js';
 import { reconcile } from './_lib/payments.js';
 
 export default route(['GET'], async (req, res) => {
@@ -12,10 +12,13 @@ export default route(['GET'], async (req, res) => {
   card = await reconcile(card);
   if (card.status !== 'paid') throw httpError(402, 'unpaid');
 
-  const paths = [...(card.photo_paths || []), ...(card.song_path ? [card.song_path] : [])];
-  const urls = await signReads(paths);
-  const photos = urls.slice(0, (card.photo_paths || []).length).filter(Boolean);
-  const song = card.song_path ? urls[urls.length - 1] : null;
+  // Expired: delete it for good and say so.
+  if (card.expires_at && new Date(card.expires_at).getTime() < Date.now()) {
+    await deleteCards([card]).catch((e) => console.error('delete expired failed', e));
+    return send(res, 410, { error: 'expired', days: CARD_LIFETIME_DAYS });
+  }
+
+  const photos = (await signReads(card.photo_paths || [])).filter(Boolean);
 
   // Count opens (best effort, never blocks the card from showing).
   updateCard(id, {
@@ -23,5 +26,5 @@ export default route(['GET'], async (req, res) => {
     first_opened_at: card.first_opened_at || new Date().toISOString(),
   }).catch((e) => console.error('open count failed', e));
 
-  send(res, 200, { data: card.data, photos, song });
+  send(res, 200, { data: card.data, photos, expires: card.expires_at || null });
 });

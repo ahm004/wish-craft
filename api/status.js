@@ -10,5 +10,5 @@ export default route(['POST'], async (req, res) => {
   const card = await getCard(id);
   if (!tokenMatches(card, token)) throw httpError(404, 'Card not found.');
   const fresh = await reconcile(card);
-  send(res, 200, { status: fresh.status, opens: fresh.open_count || 0 });
+  send(res, 200, { status: fresh.status, opens: fresh.open_count || 0, expires: fresh.expires_at || null });
 });

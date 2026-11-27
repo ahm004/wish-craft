@@ -1,15 +1,16 @@
 // The text for each occasion page (public/birthday-card.html and so on).
 // Edit the words here, then run:  npm run seo
-// Keep claims true to the product: preview is free, ₹35 per card, up to 5 photos, own song (MP3/M4A, 10 MB),
-// the link stays active for at least 12 months, pay by UPI / cards / netbanking / wallets via Razorpay.
+// Keep claims true to the product: preview is free, ₹30 per card (₹5 off the usual ₹35), up to 5 photos, built-in music only (no song uploads),
+// the link stays active for 7 days and then the card and photos are deleted automatically, pay by UPI / cards / netbanking / wallets via Razorpay.
 
-export const PRICE = '35';
+export const PRICE = '30';      // what customers pay
+export const LIST_PRICE = '35'; // the usual price (shown as the discount)
 
 export const PAGES = [
   {
     key: 'birthday', slug: 'birthday-card', label: 'Birthday card', short: 'Birthday',
     title: 'Animated Birthday Card Online, Send on WhatsApp | WishCraft',
-    description: 'Make an animated birthday card with a party-hat teddy, a gift box that opens, a cake to blow out, your photos and music. Preview free, ₹35 to send.',
+    description: 'Make an animated birthday card with a party-hat teddy, a gift box that opens, a cake to blow out, your photos and music. Preview free, ₹30 to send.',
     h1: 'Animated birthday cards that feel like a little party',
     lead: 'A plain “happy birthday” text is gone in seconds. A WishCraft birthday card is something your friend opens, plays with and remembers: a gift box that wiggles until they tap it, your message written out like a letter, your photos as polaroids, and a cake whose candles they blow out before the whole screen bursts into confetti.',
     includes: [
@@ -18,7 +19,7 @@ export const PAGES = [
       'Up to 5 photos as polaroids with your own captions',
       'A cake with candles to blow out, and the “Happy Birthday” tune',
       'A party-hat teddy (boy or girl) that runs around the cake',
-      'Background music, or upload your own favourite song',
+      'Background music from three built-in tunes: music box, happy or dreamy',
     ],
     messages: [
       'Another trip around the sun, and you still make everything brighter. I hope today brings loud laughter, too much cake and every person you love.',
@@ -28,14 +29,14 @@ export const PAGES = [
     faqs: [
       { q: 'Can I send the birthday card to someone in another city or country?', a: 'Yes. You get a link, and it opens on any phone or computer in a web browser. There is nothing to install, and the person you send it to does not pay anything.' },
       { q: 'Can I add photos of the birthday person?', a: 'Yes, up to 5 photos, each with a short caption. They appear as polaroids that develop as the person scrolls.' },
-      { q: 'How much does a birthday card cost?', a: 'Previewing is free. Sending the card costs ₹35 once, paid by UPI, card, netbanking or wallet.' },
+      { q: 'How much does a birthday card cost?', a: 'Previewing is free. Sending the card costs ₹30 once (₹5 off the usual ₹35), paid by UPI, card, netbanking or wallet.' },
     ],
     bear: { prop: 'balloon', mood: 'party', hat: true, gender: 'f' },
   },
   {
     key: 'proposal', slug: 'proposal-card', label: 'Proposal card', short: 'Proposal',
     title: 'Online Marriage Proposal Card with Teddies | WishCraft',
-    description: 'Propose with an animated card: a teddy runs in with a rose and asks the big question. The No button runs away. Add photos and music. Preview free, ₹35.',
+    description: 'Propose with an animated card: a teddy runs in with a rose and asks the big question. The No button runs away. Add photos and music. Preview free, ₹30.',
     h1: 'Propose with a teddy who runs in holding a rose',
     lead: 'Some questions deserve more than a text message. In a WishCraft proposal card, a nervous teddy runs in from the side holding a rose, your letter is written out line by line, your photos appear one by one, and then comes the big question. The “No” button keeps running away, and if they somehow find it, the teddy sits down and cries. When they say yes, the rose changes hands and both teddies run around happily before a hug.',
     includes: [
@@ -61,9 +62,9 @@ export const PAGES = [
   {
     key: 'valentine', slug: 'valentine-card', label: 'Valentine card', short: 'Valentine',
     title: 'Animated Valentine’s Day Card Online | WishCraft',
-    description: 'Ask “Will you be my Valentine?” with an animated card: a teddy with a rose, a sealed love letter and a No button that runs away. Preview free, ₹35.',
+    description: 'Ask “Will you be my Valentine?” with an animated card: a teddy with a rose, a sealed love letter and a No button that runs away. Preview free, ₹30.',
     h1: 'A Valentine’s card that blushes, runs and asks nicely',
-    lead: 'Skip the forwarded image. This Valentine card arrives as a sealed envelope. Inside is a love letter written just for them, a shy teddy holding a rose, and one small question that the No button refuses to answer. Add your photos together, pick a romantic music-box tune or upload your own song, and send it on WhatsApp.',
+    lead: 'Skip the forwarded image. This Valentine card arrives as a sealed envelope. Inside is a love letter written just for them, a shy teddy holding a rose, and one small question that the No button refuses to answer. Add your photos together, pick a romantic music-box tune, and send it on WhatsApp.',
     includes: [
       'A sealed envelope with a heart seal that opens to a love letter',
       'A shy teddy that runs in holding a rose',
@@ -80,21 +81,21 @@ export const PAGES = [
     faqs: [
       { q: 'Can I write my own Valentine question?', a: 'Yes. “Will you be my Valentine?” is filled in for you, and you can change it to anything up to 100 characters.' },
       { q: 'Does the other person need to install an app?', a: 'No. They just tap your link and the card opens in their browser, on any phone.' },
-      { q: 'Can I use our own song?', a: 'Yes, upload an MP3 or M4A up to 10 MB. Or pick the built-in music box tune.' },
+      { q: 'What music can I use?', a: 'Pick from three built-in tunes: a music box, a happy one or a dreamy one. Songs are not uploaded, so nothing of yours is stored.' },
     ],
     bear: { prop: 'rose', mood: 'shy', gender: 'f' },
   },
   {
     key: 'anniversary', slug: 'anniversary-card', label: 'Anniversary card', short: 'Anniversary',
     title: 'Animated Anniversary Card for Your Partner | WishCraft',
-    description: 'Celebrate your anniversary with an animated card: two teddies dancing, a love letter, your photos through the years and music. Preview free, ₹35.',
+    description: 'Celebrate your anniversary with an animated card: two teddies dancing, a love letter, your photos through the years and music. Preview free, ₹30.',
     h1: 'An anniversary card with two teddies and all your memories',
     lead: 'A year together is worth more than a quick emoji. This anniversary card opens like a letter, writes your message out slowly, shows your favourite photos through the years as polaroids, and ends with two teddies dancing among the hearts. It is a small, warm way to say you would choose them all over again.',
     includes: [
       'A love letter in a gold-edged stationery style',
       'Your photos “through the years” with captions',
       'Two teddies, one for each of you, dancing together',
-      'Your own song or a soft built-in tune',
+      'A soft built-in music box tune',
       'Hearts drifting across a night sky',
       'A private link for them to open whenever they like',
     ],
@@ -113,7 +114,7 @@ export const PAGES = [
   {
     key: 'congrats', slug: 'congratulations-card', label: 'Congratulations card', short: 'Congrats',
     title: 'Animated Congratulations Card Online | WishCraft',
-    description: 'Cheer someone on with an animated congratulations card: a gift to open, your message, fireworks and a teddy with a golden trophy. Preview free, ₹35.',
+    description: 'Cheer someone on with an animated congratulations card: a gift to open, your message, fireworks and a teddy with a golden trophy. Preview free, ₹30.',
     h1: 'Congratulations cards with fireworks and a golden trophy',
     lead: 'New job, graduation, a promotion, a big result? Tell them you are proud of them in a way they will actually remember. This card opens like a gift, writes your message out like a letter, and finishes with fireworks, confetti and a teddy running victory laps with a golden trophy.',
     includes: [
@@ -122,7 +123,7 @@ export const PAGES = [
       'Photos of the big moment, with captions',
       'Fireworks and spotlights sweeping the screen',
       'A teddy with a trophy running victory laps',
-      'Music of your choice, or your own song',
+      'Built-in music with a happy, party feel',
     ],
     messages: [
       'You did it! All those late nights and hard work finally paid off. I am so proud of you, and honestly not surprised at all.',
@@ -139,7 +140,7 @@ export const PAGES = [
   {
     key: 'thanks', slug: 'thank-you-card', label: 'Thank-you card', short: 'Thank you',
     title: 'Animated Thank-You Card for Friends & Family | WishCraft',
-    description: 'Say thank you properly with an animated card: a teddy offering flowers, a heartfelt letter, your photos and soft music. Preview free, ₹35.',
+    description: 'Say thank you properly with an animated card: a teddy offering flowers, a heartfelt letter, your photos and soft music. Preview free, ₹30.',
     h1: 'A thank-you card that says it properly',
     lead: 'Some people make life easier just by being around. When “thanks” in a chat does not feel like enough, send this: a thank-you card with a bouquet-bearing teddy that bows, a letter written out with all you want to say, and the photos that remind you both why it matters.',
     includes: [
@@ -165,7 +166,7 @@ export const PAGES = [
   {
     key: 'sorry', slug: 'sorry-card', label: 'Sorry card', short: 'Sorry',
     title: 'Say Sorry with an Animated Apology Card | WishCraft',
-    description: 'Make an apology they will actually open: a sad teddy with flowers, your heartfelt letter and a “Forgive me?” button. Preview free, ₹35 to send.',
+    description: 'Make an apology they will actually open: a sad teddy with flowers, your heartfelt letter and a “Forgive me?” button. Preview free, ₹30 to send.',
     h1: 'A sorry card for when words in a chat are not enough',
     lead: 'Saying sorry is hard, and a one-line text can feel cold. This apology card walks in slowly with a sad teddy holding flowers, then shows your letter, written out one line at a time, with the question “Forgive me?” at the end. If they take their time, the teddy sits and waits. When they say yes, there is a hug.',
     includes: [

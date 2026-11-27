@@ -13,9 +13,11 @@
   "googleVerification": "",
 
   "hours": "Monday to Saturday, 10:00 AM to 6:00 PM IST",
-  "price": "35",
+  "price": "30",
+  "listPrice": "35",
+  "discount": "5",
   "refundDays": "7",
   "responseDays": "2",
-  "cardLifetime": "12 months",
-  "updated": "25 November 2026"
+  "cardLifetime": "7 days",
+  "updated": "26 November 2026"
 }

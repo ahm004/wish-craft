@@ -5,6 +5,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { httpError } from './http.js';
+import { UNPAID_HOURS } from './rules.js';
 
 const SB_URL = (process.env.SUPABASE_URL || '').replace(/\/$/, '');
 const SB_KEY = process.env.SUPABASE_SERVICE_KEY || '';
@@ -99,4 +100,50 @@ export async function signReads(paths) {
   if (LOCAL_MODE) return paths.map((p) => devSigned('/api/media', p));
   const rows = await sb(`/storage/v1/object/sign/${BUCKET}`, { method: 'POST', body: { expiresIn: READ_TTL, paths } });
   return rows.map((r) => (r.signedURL ? `${SB_URL}/storage/v1${r.signedURL}` : null));
+}
+
+/* ---------------- Expiry: nothing is kept for long ---------------- */
+const SAFE_ID = /^[A-Za-z0-9]{6,16}$/;
+
+// Cards past their expiry date (paid), or never paid for after UNPAID_HOURS (pending).
+export async function listExpired(limit = 50) {
+  assertConfigured();
+  const now = new Date().toISOString();
+  const stale = new Date(Date.now() - UNPAID_HOURS * 3600 * 1000).toISOString();
+  const pick = (c) => ({ id: c.id, photo_paths: c.photo_paths || [], song_path: c.song_path || null });
+  let rows;
+  if (LOCAL_MODE) {
+    rows = Object.values(loadDb())
+      .filter((c) => (c.status === 'paid' && c.expires_at && c.expires_at < now) || (c.status !== 'paid' && c.created_at < stale))
+      .map(pick);
+  } else {
+    const cols = 'id,photo_paths,song_path';
+    const paid = await sb(`/rest/v1/cards?status=eq.paid&expires_at=lt.${encodeURIComponent(now)}&select=${cols}&limit=${limit}`);
+    const pending = await sb(`/rest/v1/cards?status=eq.pending&created_at=lt.${encodeURIComponent(stale)}&select=${cols}&limit=${limit}`);
+    rows = [...paid, ...pending].map(pick);
+  }
+  return rows.filter((r) => SAFE_ID.test(r.id)).slice(0, limit);
+}
+
+// Deletes the cards AND their photos for good.
+export async function deleteCards(cards) {
+  const rows = cards
+    .map((c) => ({ id: c.id, photo_paths: c.photo_paths || [], song_path: c.song_path || null }))
+    .filter((r) => SAFE_ID.test(r.id));
+  if (!rows.length) return 0;
+  assertConfigured();
+  if (LOCAL_MODE) {
+    const db = loadDb();
+    rows.forEach((r) => { delete db[r.id]; fs.rmSync(path.join(MEDIA_DIR, r.id), { recursive: true, force: true }); });
+    saveDb(db);
+    return rows.length;
+  }
+  const files = rows.flatMap((r) => [...r.photo_paths, ...(r.song_path ? [r.song_path] : [])]);
+  if (files.length) await sb(`/storage/v1/object/${BUCKET}`, { method: 'DELETE', body: { prefixes: files } });
+  await sb(`/rest/v1/cards?id=in.(${rows.map((r) => r.id).join(',')})`, { method: 'DELETE', headers: { Prefer: 'return=minimal' } });
+  return rows.length;
+}
+
+export async function purgeExpired(limit = 50) {
+  return deleteCards(await listExpired(limit));
 }

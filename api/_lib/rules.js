@@ -1,18 +1,19 @@
 import crypto from 'node:crypto';
 import { httpError } from './http.js';
 
-export const PRICE_INR = Number(process.env.PRICE_INR || 35);
+// PRICE_INR is what the customer is charged (the ₹35 list price minus the ₹5 discount).
+export const PRICE_INR = Number(process.env.PRICE_INR || 30);
+// LIST_PRICE_INR is only shown crossed out next to the real price.
+export const LIST_PRICE_INR = Number(process.env.LIST_PRICE_INR || 35);
 export const AMOUNT_PAISE = Math.round(PRICE_INR * 100);
 export const MAX_PHOTOS = 5;
-export const MAX_SONG_BYTES = 10 * 1024 * 1024;
+// Cards and their photos are deleted automatically this many days after payment (see api/cleanup.js).
+export const CARD_LIFETIME_DAYS = Number(process.env.CARD_LIFETIME_DAYS || 7);
+// Cards that were never paid for are deleted after this many hours.
+export const UNPAID_HOURS = 24;
 
 const OCCASIONS = ['birthday', 'valentine', 'proposal', 'anniversary', 'congrats', 'thanks', 'sorry'];
-const MUSIC = ['romantic', 'happy', 'dreamy', 'song', 'none'];
-const SONG_TYPES = {
-  'audio/mpeg': 'mp3', 'audio/mp3': 'mp3', 'audio/mp4': 'm4a', 'audio/x-m4a': 'm4a',
-  'audio/aac': 'm4a', 'audio/ogg': 'ogg', 'audio/wav': 'wav', 'audio/x-wav': 'wav',
-};
-
+const MUSIC = ['romantic', 'happy', 'dreamy', 'none']; // built-in tunes only: songs are never uploaded or stored
 const ID_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
 export const ID_PATTERN = /^[A-Za-z0-9]{6,16}$/;
 
@@ -56,12 +57,5 @@ export function validateCard(body) {
   const photoCount = Number(body.photoCount) || 0;
   if (!Number.isInteger(photoCount) || photoCount < 0 || photoCount > MAX_PHOTOS) throw httpError(400, `Up to ${MAX_PHOTOS} photos allowed.`);
 
-  let songExt = null;
-  if (data.mu === 'song') {
-    const s = body.song || {};
-    songExt = SONG_TYPES[s.type];
-    if (!songExt) throw httpError(400, 'That song format is not supported. Use an MP3 or M4A file.');
-    if (!(s.size > 0 && s.size <= MAX_SONG_BYTES)) throw httpError(400, 'The song must be smaller than 10 MB.');
-  }
-  return { data, photoCount, songExt };
+  return { data, photoCount };
 }

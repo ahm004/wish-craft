@@ -125,13 +125,13 @@
     romantic: { label: 'Music box', icon: '🎼', hint: 'Soft, romantic music box' },
     happy: { label: 'Happy', icon: '🎉', hint: 'Bouncy and cheerful' },
     dreamy: { label: 'Dreamy', icon: '🌙', hint: 'Calm, floaty and warm' },
-    song: { label: 'Your song', icon: '🎵', hint: 'Upload an MP3 or M4A (max 10 MB)' },
     none: { label: 'No music', icon: '🔇', hint: 'Only the little sound effects' },
   };
 
-  const PRICE_INR = 35;
+  let PRICE_INR = 30;     // what is charged; the server confirms the real number
+  let LIST_PRICE = 35;    // the usual price, shown crossed out
+  let cardDays = 7; // how long a paid card lasts; the server sends the real number
   const MAX_PHOTOS = 5;
-  const MAX_SONG_BYTES = 10 * 1024 * 1024;
 
   /* ================= CARD DATA ================= */
   // Old free links (#w=...) kept the card inside the link. They still open.
@@ -146,15 +146,13 @@
   }
   const SAFE_MEDIA = /^(https?:\/\/|blob:|data:image\/|\/api\/media\?)/i;
 
-  // raw = card fields {o,t,f,m,q,mu,c}; media = { photos: [url], song: url }
+  // raw = card fields {o,t,f,m,q,mu,c}; media = { photos: [url] }
   function normalize(raw, media = {}) {
     const o = OCCASIONS[raw.o] ? raw.o : 'birthday';
     const occ = OCCASIONS[o];
     const clip = (v, n) => String(v || '').trim().slice(0, n);
-    let mu = raw.mu === 'url' ? 'song' : raw.mu;
-    if (!MUSIC_OPTIONS[mu]) mu = occ.music;
-    const mv = String(media.song || (raw.mu === 'url' ? clip(raw.mv, 500) : ''));
-    if (mu === 'song' && !SAFE_MEDIA.test(mv)) mu = occ.music;
+    const mu = MUSIC_OPTIONS[raw.mu] ? raw.mu : occ.music; // built-in tunes only, songs are never uploaded
+    const mv = '';
     return {
       o,
       to: clip(raw.t, 40) || 'you',
@@ -438,16 +436,6 @@
       g.linearRampToValueAtTime(to, a.currentTime + s);
     }
     function start() {
-      if (key === 'song' && url) {
-        if (!el || elUrl !== url) {
-          if (el) el.pause();
-          el = new window.Audio(url); elUrl = url; el.loop = true; el.volume = 0.55;
-          el.addEventListener('error', () => { if (key === 'song') { key = 'romantic'; start(); } });
-        }
-        el.muted = AudioCore.muted;
-        el.play().catch(() => { key = 'romantic'; start(); });
-        return;
-      }
       cur = TRACKS[key];
       if (!cur) return;
       const a = AudioCore.get(); if (!a) return;
@@ -461,17 +449,12 @@
       clearTimeout(resumeT);
       clearInterval(timer); timer = null;
       if (AudioCore.get()) fade(0, 0.6);
-      if (el) el.pause();
     }
-    document.addEventListener('visibilitychange', () => {
-      if (!el || key !== 'song') return;
-      if (document.hidden) el.pause(); else if (timer === null && resumeT === null) el.play().catch(() => {});
-    });
     return {
       play(k, u) { halt(); resumeT = null; key = k; url = u || ''; start(); },
       stop() { halt(); resumeT = null; key = 'none'; },
       duck(ms) { halt(); resumeT = setTimeout(() => { resumeT = null; start(); }, ms); },
-      setMuted(m) { if (el) el.muted = m; },
+      setMuted() {},
     };
   })();
 
@@ -528,12 +511,6 @@
     g.imageSmoothingQuality = 'high';
     g.drawImage(img, 0, 0, c.width, c.height);
     return new Promise((res, rej) => c.toBlob((b) => (b ? res(b) : rej(new Error('Could not compress image'))), 'image/jpeg', 0.85));
-  }
-  function songType(file) {
-    if (/^audio\/(mpeg|mp3|mp4|x-m4a|aac)$/.test(file.type)) return file.type === 'audio/mp3' ? 'audio/mpeg' : file.type;
-    if (/\.mp3$/i.test(file.name)) return 'audio/mpeg';
-    if (/\.m4a$/i.test(file.name)) return 'audio/mp4';
-    return '';
   }
 
   /* ================= SERVER CALLS ================= */
@@ -694,7 +671,23 @@
     onScroll();
   }
 
+  /* ================= PRICE (the server decides; the page just shows it) ================= */
+  let isPreviewDemo = false;
+  function applyPrice(p) {
+    if (!p || !(p.price > 0)) return;
+    PRICE_INR = p.price; LIST_PRICE = p.listPrice || p.price;
+    $$('.price-tag').forEach((e) => { e.textContent = '₹' + PRICE_INR; });
+    $$('.list-price').forEach((e) => { e.textContent = '₹' + LIST_PRICE; e.hidden = LIST_PRICE <= PRICE_INR; });
+    $$('.off-badge').forEach((e) => { e.hidden = LIST_PRICE <= PRICE_INR; const n = e.querySelector('.off-amount'); if (n) n.textContent = String(LIST_PRICE - PRICE_INR); });
+    const pv = $('#pvPay'); if (pv && !isPreviewDemo) pv.textContent = 'Get link · ₹' + PRICE_INR;
+  }
+  function loadPrice() {
+    if (location.protocol === 'file:') return;
+    fetch('/api/price').then((r) => (r.ok ? r.json() : null)).then(applyPrice).catch(() => {});
+  }
+
   function startCreator() {
+    loadPrice();
     $('#creator').hidden = false;
     const form = $('#wishForm'), msg = $('#msg'), question = $('#question');
     let current = 'birthday', msgEdited = false, sIdx = 0;
@@ -710,7 +703,6 @@
       });
     });
     const photos = []; // { blob, url, cap }
-    let song = null;   // { file, url, type }
 
     // ---- occasion chips ----
     function makeChip(icon, label, onClick, dataset) {
@@ -754,34 +746,18 @@
       music = key;
       if (byUser) musicPicked = true;
       $$('#musicChips .chip').forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.m === key)));
-      $('#songPick').hidden = key !== 'song';
       $('#musicHint').textContent = MUSIC_OPTIONS[key].hint;
-      $('#musicPreview').hidden = key === 'none' || (key === 'song' && !song);
+      $('#musicPreview').hidden = key === 'none';
       if (previewing) {
-        if (key === 'none' || (key === 'song' && !song)) stopListen(); else Music.play(key, song?.url);
+        if (key === 'none') stopListen(); else Music.play(key);
       }
-      if (key === 'song' && !song && byUser) $('#songInput').click();
     }
     function stopListen() { previewing = false; Music.stop(); $('#musicPreview').textContent = '▶ Listen'; }
     $('#musicPreview').addEventListener('click', () => {
       if (previewing) return stopListen();
       previewing = true;
-      Music.play(music, song?.url);
+      Music.play(music);
       $('#musicPreview').textContent = '■ Stop';
-    });
-    $('#songBtn').addEventListener('click', () => $('#songInput').click());
-    $('#songInput').addEventListener('change', () => {
-      const f = $('#songInput').files[0];
-      $('#songInput').value = '';
-      if (!f) return;
-      const type = songType(f);
-      if (!type) { $('#songName').textContent = '⚠️ Please choose an MP3 or M4A file.'; return; }
-      if (f.size > MAX_SONG_BYTES) { $('#songName').textContent = '⚠️ That file is over 10 MB. Try a shorter song.'; return; }
-      if (song) URL.revokeObjectURL(song.url);
-      song = { file: f, url: URL.createObjectURL(f), type };
-      $('#songName').textContent = `✓ ${f.name}`;
-      $('#songBtn').textContent = '🎵 Change song';
-      setMusic('song', true);
     });
 
     // ---- photos ----
@@ -838,7 +814,6 @@
       if (!to) return fail('Please enter their name.', $('#to'));
       if (!from) return fail('Please enter your name.', $('#from'));
       if (!m) return fail('Please write a message.', msg);
-      if (music === 'song' && !song) return fail('Choose a song file, or pick another music option.', $('#songBtn'));
       const data = { o: current, t: to, f: from, m, mu: music, sg: gender.sg, rg: gender.rg };
       if (occ.finale === 'question' && question.value.trim()) data.q = question.value.trim();
       if (photos.some((p) => p.cap.trim())) data.c = photos.map((p) => p.cap.trim());
@@ -856,7 +831,7 @@
         return;
       }
       if (previewing) stopListen();
-      openPreview({ data, photos: photos.map((p) => p.url), song: song?.url || null });
+      openPreview({ data, photos: photos.map((p) => p.url) });
     });
     function openPreview(payload) {
       previewData = payload;
@@ -867,7 +842,7 @@
     $('#demoBtn').addEventListener('click', () => {
       if (location.protocol === 'file:') { Progress.message('⚙️', 'Run “npm run dev” and open http://localhost:3000 to watch the demo.'); return; }
       if (previewing) stopListen();
-      openPreview({ demo: true, photos: [], song: null, data: { o: 'proposal', t: 'Sara', f: 'Sam', m: OCCASIONS.proposal.msgs[0], mu: 'romantic', sg: 'm', rg: 'f' } });
+      openPreview({ demo: true, photos: [], data: { o: 'proposal', t: 'Sara', f: 'Sam', m: OCCASIONS.proposal.msgs[0], mu: 'romantic', sg: 'm', rg: 'f' } });
     });
     function closePreview() {
       frame.src = 'about:blank';
@@ -900,16 +875,10 @@
       busy = true;
       try {
         Progress.show('Saving your card…');
-        const created = await api('cards', {
-          ...data,
-          photoCount: photos.length,
-          song: data.mu === 'song' ? { type: song.type, size: song.file.size } : null,
-        });
+        const created = await api('cards', { ...data, photoCount: photos.length });
+        if (created.days) cardDays = created.days;
         Mine.upsert({ id: created.id, token: created.token, to: data.t, o: data.o, status: 'pending', at: Date.now() });
-        const files = [
-          ...photos.map((p) => ({ blob: p.blob, type: 'image/jpeg' })),
-          ...(data.mu === 'song' ? [{ blob: song.file, type: song.type }] : []),
-        ];
+        const files = photos.map((p) => ({ blob: p.blob, type: 'image/jpeg' }));
         for (let i = 0; i < files.length; i++) {
           Progress.show(files.length === 1 ? 'Uploading…' : `Uploading ${i + 1} of ${files.length}…`);
           await uploadFile(created.uploads[i], files[i].blob, files[i].type);
@@ -947,6 +916,7 @@
   async function pay(id, token, to, o) {
     Progress.show('Opening secure payment…');
     const c = await api('checkout', { id, token });
+    if (c.days) cardDays = c.days;
     if (c.paid) return paid(id, to, o);
 
     if (c.testMode) {
@@ -989,7 +959,7 @@
     });
   }
   function cancelled() {
-    Progress.message('💾', 'Payment not completed. Your card is saved, so you can pay any time from “Your cards” at the top of this page.');
+    Progress.message('💾', 'Payment not completed. Your card is kept for 24 hours, so you can still pay from “Your cards” at the top of this page. After that it is deleted.');
     renderMine();
   }
   async function checkPaid(id, token, to, o) {
@@ -1002,8 +972,9 @@
   }
   function paid(id, to, o) {
     Progress.hide();
-    Mine.update(id, { status: 'paid' });
+    Mine.update(id, { status: 'paid', expires: Date.now() + cardDays * 86400000 });
     renderMine();
+    $('#lifeNote').textContent = `⏳ This link works for ${cardDays} days, so send it soon. After that the card and its photos are deleted automatically and nothing is kept.`;
     const url = linkFor(id);
     const occ = OCCASIONS[o] || OCCASIONS.birthday;
     $('#resultTo').textContent = to;
@@ -1035,7 +1006,10 @@
       who.className = 'mine-who';
       who.textContent = `${occ.emoji} For ${c.to}`;
       const meta = document.createElement('small');
-      meta.textContent = c.status === 'paid' ? (c.opens ? ` · opened ${c.opens}×` : ' · paid') : ' · not paid yet';
+      const left = c.expires ? Math.max(0, Math.ceil((c.expires - Date.now()) / 86400000)) : null;
+      meta.textContent = c.status === 'paid'
+        ? (c.opens ? ` · opened ${c.opens}×` : ' · paid') + (left !== null ? ` · ${left <= 0 ? 'expires today' : left === 1 ? 'expires tomorrow' : `expires in ${left} days`}` : '')
+        : ' · not paid yet';
       who.appendChild(meta);
       const btn = document.createElement('button');
       btn.type = 'button';
@@ -1062,7 +1036,7 @@
     for (const c of Mine.all().slice(0, 8)) {
       try {
         const s = await api('status', { id: c.id, token: c.token });
-        Mine.update(c.id, { status: s.status, opens: s.opens });
+        Mine.update(c.id, { status: s.status, opens: s.opens, expires: s.expires ? new Date(s.expires).getTime() : c.expires });
       } catch (err) {
         if (err.status === 404) Mine.save(Mine.all().filter((x) => x.id !== c.id));
       }
@@ -1114,6 +1088,7 @@
   function stepper(ms) { const id = setInterval(() => Sound.step(), 170); setTimeout(() => clearInterval(id), ms); }
   // a bear runs back and forth across some ground, cheering, then comes home
   async function wander(t, { min = -120, max = 120, rounds = 5, ms = 1100, pause = 400 } = {}) {
+    t.hush();
     for (let i = 0; i < rounds; i++) {
       stepper(ms);
       await t.slide(rand(min, max), ms);
@@ -1163,10 +1138,12 @@
       document.body.classList.add('is-preview');
       $('#previewBar').hidden = false;
       if (opts.demo) {
+        isPreviewDemo = true;
         $('#pvLabel').textContent = '▶ Demo card';
         $('#pvClose').textContent = '✕ Close';
         $('#pvPay').textContent = 'Make my own →';
       }
+      if (!opts.demo) loadPrice();
       $('#pvClose').addEventListener('click', () => parent.postMessage({ type: 'wc-close' }, location.origin));
       $('#pvPay').addEventListener('click', () => parent.postMessage({ type: 'wc-pay' }, location.origin));
     }
@@ -1403,9 +1380,9 @@
       for (const c of $$('.candle')) { c.classList.add('out'); await sleep(170); }
       $('#cakeHint').textContent = 'Wish made ✨';
       $('#f-cake').classList.add('done'); // shrink the cake so the bear and the ending both fit
-      t.set({ mood: 'joy', act: 'cheer' }).say('Happy Birthday! 🥳', 4000);
+      t.set({ mood: 'joy', act: 'cheer' }).say('Happy Birthday! 🥳', 2200);
       const room = Math.min(130, Math.max(40, (innerWidth - 160) / 2));
-      setTimeout(() => wander(t, { min: -room, max: room, rounds: 5 }), 700);
+      setTimeout(() => wander(t, { min: -room, max: room, rounds: 5 }), 2500);
       await sleep(500);
       Music.duck(Sound.birthday() + 600); // pause the background music while the song plays
       const [x, y] = center(cake);
@@ -1558,9 +1535,9 @@
       setTimeout(() => pair.a.say('Happy anniversary! 💞', 3600), 600);
     } else {
       const t = mount('#m-cel', 'yes', bear(d, { mood: 'joy', hat: d.o === 'congrats', act: 'cheer' }), d.photos.length ? 150 : 200);
-      setTimeout(() => t.say(LOOK[d.o].hi, 3600), 600);
+      setTimeout(() => t.say(LOOK[d.o].hi, 2200), 600);
       const room = Math.min(120, Math.max(30, (innerWidth - 220) / 2));
-      if (d.o === 'congrats') setTimeout(() => wander(t, { min: -room, max: room, rounds: 5 }), 900);
+      if (d.o === 'congrats') setTimeout(() => wander(t, { min: -room, max: room, rounds: 5 }), 2900);
       if (d.o === 'thanks') { t.set({ mood: 'happy', act: 'bow' }); setTimeout(() => t.set({ mood: 'joy', act: 'cheer' }), 2800); }
     }
     Sound.fanfare();
@@ -1637,10 +1614,11 @@
     } catch {
       return statusScreen('sad', "Couldn't connect", 'Check your internet connection and try again.', { retry: () => loadCard(id) });
     }
+    if (r.status === 410) return statusScreen('sad', 'This card has expired', `Cards are deleted automatically ${j.days || 7} days after they are made, to keep photos and messages private. Ask the sender to make you a new one!`);
     if (r.status === 402) return statusScreen('shy', "This surprise isn't ready yet", "The sender hasn't finished setting it up. Ask them to check their link!", { retry: () => loadCard(id) });
     if (r.status === 404) return statusScreen('wow', "We couldn't find this card", 'Check that the link is complete and try again.');
     if (!r.ok || !j.data) return statusScreen('cry', 'Something went wrong', 'Please try again in a moment.', { retry: () => loadCard(id) });
-    startExperience(normalize(j.data, { photos: j.photos, song: j.song }));
+    startExperience(normalize(j.data, { photos: j.photos }));
   }
 
   function waitForPreview() {
@@ -1648,7 +1626,7 @@
     addEventListener('message', (e) => {
       if (started || e.source !== parent || e.origin !== location.origin || e.data?.type !== 'wc-preview') return;
       started = true;
-      startExperience(normalize(e.data.data, { photos: e.data.photos, song: e.data.song }), { preview: true, demo: !!e.data.demo });
+      startExperience(normalize(e.data.data, { photos: e.data.photos }), { preview: true, demo: !!e.data.demo });
     });
     parent.postMessage({ type: 'wc-ready' }, location.origin);
   }

@@ -6,7 +6,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PAGES, LEGAL, PRICE } from './content.js';
+import { PAGES, LEGAL, PRICE, LIST_PRICE } from './content.js';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PUB = path.join(ROOT, 'public');
@@ -91,7 +91,7 @@ ${jsonld}
           <h1>${esc(p.h1)}</h1>
           <p class="lead">${esc(p.lead)}</p>
           <p><a class="btn primary" href="/?occasion=${p.key}#make">Make a ${esc(p.label.toLowerCase())} · ₹${PRICE}</a></p>
-          <p class="mini">Preview it free. You only pay when you love it.</p>
+          <p class="mini">Preview it free. You only pay when you love it. Now ₹${PRICE}, usually ₹${LIST_PRICE}.</p>
         </div>
         <div class="seo-bear" id="pageBear" aria-hidden="true"></div>
       </div>

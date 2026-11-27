@@ -2,6 +2,7 @@
 import crypto from 'node:crypto';
 import { httpError } from './http.js';
 import { updateCard } from './store.js';
+import { CARD_LIFETIME_DAYS } from './rules.js';
 
 const KEY_ID = process.env.RAZORPAY_KEY_ID || '';
 const KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || '';
@@ -37,7 +38,9 @@ export function signatureValid(orderId, paymentId, signature) {
 }
 
 export async function markPaid(card, paymentId) {
-  const patch = { status: 'paid', paid_at: new Date().toISOString() };
+  const now = Date.now();
+  // The card (and its photos) are deleted automatically CARD_LIFETIME_DAYS after payment.
+  const patch = { status: 'paid', paid_at: new Date(now).toISOString(), expires_at: new Date(now + CARD_LIFETIME_DAYS * 86400000).toISOString() };
   if (paymentId) patch.payment_id = String(paymentId).slice(0, 64);
   await updateCard(card.id, patch);
   return { ...card, ...patch };
